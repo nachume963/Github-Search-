@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>readme</title>
+</head>
+<body>
+<h1>README</h1>
+<p><b>Student 1:</b> name:Nachum Ehrlich, e-mail: ne0527133963@gmail.com, id: 205412380</p>
+<p><b>Student 2:</b> name:haim david fisher, e-mail: haimdfisher@gmail.com, id: 315343699</p>
+
+<ol>
+    <li>A brief description of each Ajax reading</li>
+    <ol>
+        <li>Call a github site server for username search</li>
+        <ol>
+            <li>Call to receive login</li>
+            <ol type="a">
+                <li>URL: https://api.github.com/users/user</li>
+                <li>Parameters: the username entered by the user in the search</li>
+                <li>Answer content: Assuming everything is accepted json containing lots of details. Of which we take the value of the login field.</li>
+            </ol>
+            <li>Read to get the repositories list</li>
+            <ol type="a">
+                <li>URL: https://api.github.com/users/user</li>
+                <li>Parameters: the username entered by the user in search + "/ repo</li>
+                <li>Answer content: Assuming that everything is accepted json containing an array that each of its organs represents advertising and contains an additional json with all the details of that publication. From that we take the value of the full_name field and the value (which is actually a link) of the html_url field.</li>
+            </ol>
+            <li>Call to receive followers list</li>
+            <ol type="a">
+                <li>URL: https://api.github.com/users/user</li>
+                <li>Parameters: the username entered by the user in search + "/ followers"</li>
+                <li>Answer content: Assuming that everything is accepted json containing an array that each of its organs represents a follower and contains an additional json with all the same tracker information. From that we take the value of the full_name field and the value (which is actually a link) of the html_url field.</li>
+            </ol>
+        </ol>
+        <li>Call our server for saving or deleting a user</li>
+        <ol>
+            <li>A call to save a user on a server</li>
+            <ol type="a">
+                <li>URL: http://localhost:3000/savedList/save</li>
+                <li>Parameters: the username entered by the user in the search, under the username field</li>
+                <li>Answer content: Assuming everything is accepted json containing the username saved as the value of the details field for writing into the html file</li>
+            </ol>
+            <li>Call to delete user from server</li>
+            <ol type="a">
+                <li>URL: http://localhost:3000/savedList/delete</li>
+                <li>Parameters: the username entered by the user in the search, under the username field</li>
+                <li>Answer content: Assuming everything is accepted json containing the deleted username as the value of the details field for deletion from the html file</li>
+            </ol>
+        </ol>
+        <li>Call from our server to github server for username search</li>
+        <ol>
+            <li></li>
+            <ol type="a">
+                <li>URL: https://api.github.com/users/user</li>
+                <li>Parameters: The value received on the server under the username field</li>
+                <li>Content of reply: We only verify that this user does exist on the github site.</li>
+            </ol>
+        </ol>
+    </ol>
+    <li>
+        A brief explanation of how you optimized the program flow by using asynchronous code - with the help of Promises -
+        We used fetch () and then () functions.
+        The fetch () function returns Promises, and the then () function takes care of the flow of the program.
+    </li>
+
+    <li>
+        Server side brief explanation: Your REST interface description (http request type, URL and its parameters)
+        As we detailed above about the calls to our server, the parameters and everything.
+        On the server itself we use the get () function.
+    </li>
+</ol>
+</body>
+</html>

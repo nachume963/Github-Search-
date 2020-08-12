@@ -1,0 +1,168 @@
+<script>
+
+    (function () {
+        //returns a username that is entered in the input box
+        var username = function () {
+            return document.querySelector("#input-box").value;
+        }
+        //receives a string and prints an error message for 4 seconds
+        function draw_err(err_msg){
+            document.getElementById("error-msg").style.display = "block";
+            document.getElementById("error-msg").innerHTML = err_msg;
+            setTimeout(function (){document.getElementById("error-msg").style.display = "none";}, 4000);
+        }
+        //Checks the status of what returned from the server
+        function status(response) {
+            if (response.status >= 200 && response.status < 300) {
+                return Promise.resolve(response)
+            } else if(response.status === 404) {
+                document.querySelector("#details").style.display = "none";
+                draw_err("This user was not found on the github site");
+                return Promise.reject(new Error(response.statusText));
+            } else {
+                document.querySelector("#details").style.display = "none";
+                return Promise.reject(new Error(response.statusText))
+            }
+        }
+        //Returns Jason
+        function json(response) {
+            return response.json()
+        }
+
+        //In case we click a search button
+        function buildCard(){
+            //Sets the URL
+            let user = username().trim();
+
+            if(user === ""){
+                draw_err("cannot search empty user");
+                return;
+            }
+
+            let url = 'https://api.github.com/users/' + user;
+            //Obtains the data, and by entering the relevant places on the HTML page
+            getLogin(url);
+            getRepositories(url);
+            getFollowers(url);
+        }
+        //Gets the name
+        function getLogin(url){
+            //Sending request to github site to accept json
+            fetch(url)
+                .then(status)
+                .then(json)
+                .then(response => {
+                        //If all goes well, move the card into visible mode
+                        document.querySelector("#details").style.display = "block";
+                        //Inserts the username in HTML
+                        document.querySelector("#login").innerHTML = response.login;
+                    }
+                )
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+        //Gets the repositories
+        function getRepositories(url){
+            //Sending request to github site to accept json
+            fetch(url + "/repos")
+                .then(status)
+                .then(json)
+                .then(response => {
+                        // Examine the response and generate the HTML
+                        let html = "";
+                        for (i of response) {
+                            html += '<li><a href="' + i.html_url + "' target='_blank'>" + i.full_name + '</a></li>';
+                        }
+                        //Inserts HTML list of repositories
+                        document.querySelector("#repositories").innerHTML = html;
+                    }
+                )
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+        //Gets the followers
+        function getFollowers(url){
+            //Sending request to github site to accept json
+            fetch(url + "/followers")
+                .then(status)
+                .then(json)
+                .then(response => {
+                        let html = "";
+                        for (i of response) {
+                            html += '<li><a href="' + i.html_url + "' target='_blank'>" + i.login + '</a></li>';
+                        }
+                        //In HTML, follows the list of followers
+                        document.querySelector("#followers").innerHTML = html;
+                    }
+                )
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+
+        //In case we click a save button
+        function saveUsername(){
+            //Sending a request to our server to save the user
+            fetch("save?username=" + username())
+                .then(status)
+                .then(json)
+                .then(response => {
+                    if (response.status === "ok"){
+                        //Inserts the username in HTML
+                        refreshSavedList();
+                    }
+                    else
+                    //If the user is already Exist, he prints an error message
+                        draw_err(response.details);
+                })
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+        //In case we click a delete button
+        function deleteUsername(){
+            //Sending a request to our server to delete the user
+            fetch("delete?username=" + username())
+                .then(status)
+                .then(json)
+                .then(response => {
+                    if (response.status === "ok"){
+                        //remove the username from HTML
+                        refreshSavedList();
+                    }
+                    else
+                    //If the user is already not Exist, he prints an error message
+                        draw_err(response.details);
+                })
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+
+        function refreshSavedList(){
+            fetch("refresh")
+                .then(status)
+                .then(json)
+                .then(response => {
+                    if (response.status === "ok"){
+                        document.getElementById("saved list").innerHTML = response.details;
+                    }
+                })
+                .catch(err => {
+                    console.log('Fetch Error :', err);
+                });
+        }
+
+        //Listens to browser clicks
+        document.addEventListener('DOMContentLoaded', function () {
+            //if thr user have saved list
+            refreshSavedList();
+
+            document.querySelector("#search").addEventListener("click", buildCard);
+            document.querySelector("#save").addEventListener("click", saveUsername);
+            document.querySelector("#delete").addEventListener("click", deleteUsername);
+        }, false);
+    })();
+</script>
